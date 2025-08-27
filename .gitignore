@@ -1,0 +1,13 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Data outputs
+data/*.csv
+data/*.png
+data/*.json
+
+# Secrets
+config.json
+.env

@@ -1,0 +1,60 @@
+/* Global dark theme */
+body {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    background: #0d1b2a;   /* dark blue background */
+    color: #ffffff;        /* white text */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* Header + Footer */
+  header, footer {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  /* Center grid vertically + horizontally */
+  main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Grid holding project cards */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);  /* force 2 columns */
+    gap: 24px;
+    max-width: 600px;                       /* tighter box */
+    margin: 0 auto;                         /* center horizontally */
+  }
+  
+  /* Project cards */
+  .card {
+    background: #1b263b;   /* slightly lighter navy box */
+    border: 1px solid #415a77;
+    border-radius: 12px;
+    padding: 24px;
+    text-decoration: none;
+    color: #ffffff;
+    text-align: center;
+    transition: transform .15s ease, background .15s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-3px);
+    background: #2c3e50;
+  }
+  
+  .card h3 {
+    margin: 0 0 8px 0;
+  }
+  
+  .card p {
+    margin: 0;
+    color: #d1d5db;  /* light gray */
+  }
+  

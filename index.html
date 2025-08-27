@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zac’s Project Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <header>
+    <h1>Zac’s Project Hub</h1>
+    <p>Select a project below to explore.</p>
+  </header>
+
+  <main class="grid">
+    <a class="card" href="projects/project1/">
+      <h3>Project 1</h3>
+      <p>A sample calculator (static, JS-based).</p>
+    </a>
+    <a class="card" href="projects/project2/">
+      <h3>Project 2</h3>
+      <p>Data analysis results from Python.</p>
+    </a>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Zac
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
