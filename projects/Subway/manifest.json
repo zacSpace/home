@@ -2,7 +2,7 @@
   "name": "NYC Transit Planner",
   "short_name": "NYC Transit",
   "description": "Live NYC subway arrival planner with MTA real-time data",
-  "start_url": "/",
+  "start_url": "/projects/Subway/",
   "display": "standalone",
   "background_color": "#0039A6",
   "theme_color": "#0039A6",
