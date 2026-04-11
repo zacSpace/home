@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background tile -->
+  <rect width="512" height="512" rx="112" fill="#0039A6"/>
+
+  <!-- Subway car silhouette -->
+  <rect x="80" y="180" width="352" height="180" rx="28" fill="white" opacity=".15"/>
+  <rect x="96" y="196" width="320" height="148" rx="20" fill="white" opacity=".12"/>
+
+  <!-- Windows -->
+  <rect x="116" y="222" width="72" height="60" rx="10" fill="white" opacity=".9"/>
+  <rect x="220" y="222" width="72" height="60" rx="10" fill="white" opacity=".9"/>
+  <rect x="324" y="222" width="72" height="60" rx="10" fill="white" opacity=".9"/>
+
+  <!-- Wheels -->
+  <circle cx="154" cy="370" r="26" fill="white" opacity=".7"/>
+  <circle cx="358" cy="370" r="26" fill="white" opacity=".7"/>
+
+  <!-- Track line -->
+  <rect x="64" y="390" width="384" height="12" rx="6" fill="white" opacity=".4"/>
+
+  <!-- Destination board (top of car) -->
+  <rect x="180" y="155" width="152" height="34" rx="8" fill="#FCCC0A"/>
+  <text x="256" y="180" font-family="'Helvetica Neue',Arial,sans-serif"
+        font-size="22" font-weight="800" text-anchor="middle" fill="#1a1a1a">NYC</text>
+</svg>

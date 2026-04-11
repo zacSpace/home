@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    viewport-fit=cover lets content extend under the notch/Dynamic Island.
+    CSS uses env(safe-area-inset-*) to keep content clear of the hardware.
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!-- PWA / Safari "Add to Home Screen" meta tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NYC Transit">
+  <meta name="theme-color" content="#0039A6">
+  <meta name="description" content="NYC subway planner with live MTA departure times">
+
+  <link rel="manifest" href="manifest.json">
+  <!-- iOS home-screen icon (replace with real PNG for production) -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <title>NYC Transit Planner</title>
+  <link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+  <div class="app">
+
+    <header class="app-header">
+      <div class="subway-stripe"></div>
+      <h1>NYC Transit</h1>
+      <p class="subtitle">Live subway arrival planner</p>
+    </header>
+
+    <main class="main-content">
+
+      <!-- Saved trip chips -->
+      <div id="savedTripsRow" class="saved-trips-row hidden"></div>
+
+      <form id="plannerForm" class="planner-form" novalidate>
+
+        <!-- 1. Current location -->
+        <div class="form-group">
+          <label for="origin">Current Location</label>
+          <div class="input-with-button">
+            <input
+              type="text"
+              id="origin"
+              placeholder="Tap locate or type address…"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+            >
+            <button type="button" id="locateBtn" class="icon-btn" aria-label="Detect my location">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <line x1="12" y1="1" x2="12" y2="5"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="1" y1="12" x2="5" y2="12"/>
+                <line x1="19" y1="12" x2="23" y2="12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Destination -->
+        <div class="form-group">
+          <label for="destination">Destination</label>
+          <input
+            type="text"
+            id="destination"
+            placeholder="Where are you going?"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+          >
+        </div>
+
+        <!-- 3. Arrive by + Buffer (same row) -->
+        <div class="form-row">
+          <div class="form-group form-group-grow">
+            <label for="arrivalTime">Arrive by</label>
+            <input type="time" id="arrivalTime" required>
+          </div>
+          <div class="form-group form-group-buffer">
+            <label for="bufferMin">Buffer</label>
+            <div class="buffer-stepper">
+              <button type="button" id="bufferDown" class="stepper-btn" aria-label="Decrease buffer">−</button>
+              <span id="bufferDisplay">3 min</span>
+              <button type="button" id="bufferUp" class="stepper-btn" aria-label="Increase buffer">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action row: Find Trains + Save Trip -->
+        <div class="form-actions">
+          <button type="submit" class="search-btn">
+            <span>Find Trains</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+          <button type="button" id="saveTripBtn" class="save-btn" aria-label="Save this trip">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Save Trip Modal -->
+      <div id="saveTripModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal">
+          <h3 id="modalTitle" class="modal-title">Save Trip</h3>
+          <div class="form-group">
+            <label for="tripName">Trip Name</label>
+            <input type="text" id="tripName" placeholder="e.g. Work commute" maxlength="40" autocorrect="off">
+          </div>
+          <div class="modal-check-row">
+            <input type="checkbox" id="saveLockTime">
+            <label for="saveLockTime">Lock in arrive-by time</label>
+          </div>
+          <p class="modal-hint">When locked, tapping this trip will auto-search immediately.</p>
+          <div class="modal-actions">
+            <button type="button" id="modalCancel" class="modal-btn modal-btn-secondary">Cancel</button>
+            <button type="button" id="modalSave" class="modal-btn modal-btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div id="loadingState" class="loading-state hidden">
+        <div class="spinner"></div>
+        <p>Checking live train times…</p>
+      </div>
+
+      <!-- Error state -->
+      <div id="errorState" class="error-state hidden">
+        <p id="errorMsg"></p>
+      </div>
+
+      <!-- Results -->
+      <section id="results" class="results hidden" aria-live="polite">
+        <h2 class="results-title">Route Options</h2>
+        <div id="routeCards"></div>
+      </section>
+    </main>
+
+  </div>
+
+  <!--
+    protobuf.js must load before app.js so the global `protobuf`
+    object is available when app.js initialises the GTFS-RT decoder.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/protobufjs@7/dist/protobuf.min.js"></script>
+  <!--
+    app.js defines GOOGLE_MAPS_API_KEY and loads the Google Maps API
+    dynamically via a script tag. The MTA feeds require no key.
+  -->
+  <script src="app.js?v=2"></script>
+</body>
+</html>
