@@ -778,21 +778,14 @@ function renderResults(enrichedRoutes, desiredArrivalSec) {
   const container = document.getElementById('routeCards');
   container.innerHTML = '';
 
-  // The recommended route is the one whose arrival is closest to desired
-  // without going over.
-  const onTime = enrichedRoutes.filter(r => r.arrivalTimeSec <= desiredArrivalSec);
-  const recommended = onTime.length > 0
-    ? onTime.reduce((a,b) => (desiredArrivalSec - a.arrivalTimeSec) < (desiredArrivalSec - b.arrivalTimeSec) ? a : b)
-    : enrichedRoutes[0];
-
   for (const route of enrichedRoutes) {
-    container.appendChild(renderRouteCard(route, route === recommended));
+    container.appendChild(renderRouteCard(route));
   }
 
   document.getElementById('results').classList.remove('hidden');
 }
 
-function renderRouteCard(route, isRecommended) {
+function renderRouteCard(route) {
   const { steps, lines, firstTransit, walkingSeconds, arrivalTimeSec, liveDepSec, schedDepSec } = route;
   const depSec   = liveDepSec ?? schedDepSec;
   const isLive   = liveDepSec != null;
@@ -874,9 +867,8 @@ function renderRouteCard(route, isRecommended) {
     </div>`;
 
   const card = document.createElement('div');
-  card.className = `route-card${isRecommended ? ' recommended' : ''}`;
+  card.className = 'route-card';
   card.innerHTML = `
-    ${isRecommended ? '<div class="rec-badge">Recommended</div>' : ''}
     <div class="route-lines">
       ${lines.map(lineBulletHTML).join('')}
     </div>
@@ -1000,7 +992,17 @@ window.initApp = function () {
 
   directionsService = new google.maps.DirectionsService();
 
-  // Places Autocomplete on destination
+  // Places Autocomplete on origin and destination
+  new google.maps.places.Autocomplete(
+    document.getElementById('origin'),
+    { componentRestrictions: { country: 'us' }, fields: ['formatted_address','name','geometry'] }
+  ).addListener('place_changed', function() {
+    const place = this.getPlace();
+    if (place.geometry) {
+      userCoords = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
+    }
+  });
+
   placesAutocomplete = new google.maps.places.Autocomplete(
     document.getElementById('destination'),
     { componentRestrictions: { country: 'us' }, fields: ['formatted_address','name'] }
