@@ -168,6 +168,11 @@ function renderGames() {
         timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit',
       });
 
+      // Randomize display order so favorites aren't always first
+      const [teamA, teamB] = Math.random() < 0.5
+        ? [game.home, game.away]
+        : [game.away, game.home];
+
       const card = document.createElement('div');
       card.className = `game-card${isLocked ? ' locked' : ''}${isCorrect ? ' correct' : isWrong ? ' wrong' : ''}`;
 
@@ -186,8 +191,8 @@ function renderGames() {
         pickHTML = `
           <select class="pick-select" data-game-id="${game.id}">
             <option value="">Pick a winner…</option>
-            <option value="${game.home}" ${pick === game.home ? 'selected' : ''}>${game.home}</option>
-            <option value="${game.away}" ${pick === game.away ? 'selected' : ''}>${game.away}</option>
+            <option value="${teamA}" ${pick === teamA ? 'selected' : ''}>${teamA}</option>
+            <option value="${teamB}" ${pick === teamB ? 'selected' : ''}>${teamB}</option>
           </select>`;
       }
 
@@ -197,9 +202,9 @@ function renderGames() {
           ${isLocked && !winner ? '<span class="lock-icon">🔒</span>' : ''}
         </div>
         <div class="game-teams">
-          <span class="team-name">${game.home}</span>
+          <span class="team-name">${teamA}</span>
           <span class="vs">vs</span>
-          <span class="team-name">${game.away}</span>
+          <span class="team-name">${teamB}</span>
         </div>
         <div class="game-pick-row">${pickHTML}</div>`;
 
