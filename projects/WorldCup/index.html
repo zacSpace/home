@@ -3,11 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>World Cup</title>
+  <title>World Cup 2026</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>World Cup</h1>
-  <p>Coming soon.</p>
-  <a href="/">Back to hub</a>
+
+  <!-- Name Selection Screen -->
+  <div id="nameScreen" class="screen">
+    <div class="name-modal">
+      <div class="wc-logo">⚽</div>
+      <h1>World Cup 2026</h1>
+      <p class="subtitle">Family Bracket</p>
+      <div id="nameList" class="name-list"></div>
+      <div class="divider">or</div>
+      <div class="add-name-row">
+        <input type="text" id="newNameInput" placeholder="Enter your name..." maxlength="20" />
+        <button id="addNameBtn">Join</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="hidden">
+    <header class="app-header">
+      <div class="header-title">⚽ World Cup 2026</div>
+      <button id="switchUserBtn" class="switch-btn">👤 <span id="currentUserName"></span></button>
+    </header>
+
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="picks">My Picks</button>
+      <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+    </nav>
+
+    <main>
+      <div id="picksTab" class="tab-content">
+        <div id="gamesList"></div>
+      </div>
+      <div id="leaderboardTab" class="tab-content hidden">
+        <div id="leaderboardList"></div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <button id="adminBtn" class="admin-trigger" title="Admin">⚙️</button>
+    </footer>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" class="hidden overlay">
+    <div class="admin-inner">
+      <div class="admin-header">
+        <h2>Enter Results</h2>
+        <button id="closeAdmin">✕</button>
+      </div>
+      <div id="adminGames"></div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
