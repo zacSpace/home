@@ -12,21 +12,21 @@ const db = firebase.firestore();
 
 // ─── GAMES (all times UTC, displayed in ET) ───────────────────────────────────
 const GAMES = [
-  { id: 'g1',  home: 'Brazil',          away: 'Japan',                  kickoff: '2026-06-29T17:00:00Z' },
-  { id: 'g2',  home: 'Germany',         away: 'Paraguay',               kickoff: '2026-06-29T20:30:00Z' },
-  { id: 'g3',  home: 'Netherlands',     away: 'Morocco',                kickoff: '2026-06-30T01:00:00Z' },
-  { id: 'g4',  home: "Côte d'Ivoire",   away: 'Norway',                 kickoff: '2026-06-30T17:00:00Z' },
-  { id: 'g5',  home: 'France',          away: 'Sweden',                 kickoff: '2026-06-30T21:00:00Z' },
-  { id: 'g6',  home: 'Mexico',          away: 'Ecuador',                kickoff: '2026-07-01T01:00:00Z' },
-  { id: 'g7',  home: 'England',         away: 'DR Congo',               kickoff: '2026-07-01T16:00:00Z' },
-  { id: 'g8',  home: 'Belgium',         away: 'Senegal',                kickoff: '2026-07-01T20:00:00Z' },
-  { id: 'g9',  home: 'USA',             away: 'Bosnia and Herzegovina', kickoff: '2026-07-02T00:00:00Z' },
-  { id: 'g10', home: 'Spain',           away: 'Austria',                kickoff: '2026-07-02T19:00:00Z' },
-  { id: 'g11', home: 'Portugal',        away: 'Croatia',                kickoff: '2026-07-02T23:00:00Z' },
-  { id: 'g12', home: 'Switzerland',     away: 'Algeria',                kickoff: '2026-07-03T03:00:00Z' },
-  { id: 'g13', home: 'Australia',       away: 'Egypt',                  kickoff: '2026-07-03T18:00:00Z' },
-  { id: 'g14', home: 'Argentina',       away: 'Cabo Verde',             kickoff: '2026-07-03T22:00:00Z' },
-  { id: 'g15', home: 'Colombia',        away: 'Ghana',                  kickoff: '2026-07-04T01:30:00Z' },
+  { id: 'g1',  home: 'Brazil',          away: 'Japan',                  kickoff: '2026-06-29T17:00:00Z', favorite: 'Brazil'        },
+  { id: 'g2',  home: 'Germany',         away: 'Paraguay',               kickoff: '2026-06-29T20:30:00Z', favorite: 'Germany'       },
+  { id: 'g3',  home: 'Netherlands',     away: 'Morocco',                kickoff: '2026-06-30T01:00:00Z', favorite: 'Netherlands'   },
+  { id: 'g4',  home: "Côte d'Ivoire",   away: 'Norway',                 kickoff: '2026-06-30T17:00:00Z', favorite: 'Norway'        },
+  { id: 'g5',  home: 'France',          away: 'Sweden',                 kickoff: '2026-06-30T21:00:00Z', favorite: 'France'        },
+  { id: 'g6',  home: 'Mexico',          away: 'Ecuador',                kickoff: '2026-07-01T01:00:00Z', favorite: 'Mexico'        },
+  { id: 'g7',  home: 'England',         away: 'DR Congo',               kickoff: '2026-07-01T16:00:00Z', favorite: 'England'       },
+  { id: 'g8',  home: 'Belgium',         away: 'Senegal',                kickoff: '2026-07-01T20:00:00Z', favorite: 'Belgium'       },
+  { id: 'g9',  home: 'USA',             away: 'Bosnia and Herzegovina', kickoff: '2026-07-02T00:00:00Z', favorite: 'USA'           },
+  { id: 'g10', home: 'Spain',           away: 'Austria',                kickoff: '2026-07-02T19:00:00Z', favorite: 'Spain'         },
+  { id: 'g11', home: 'Portugal',        away: 'Croatia',                kickoff: '2026-07-02T23:00:00Z', favorite: 'Portugal'      },
+  { id: 'g12', home: 'Switzerland',     away: 'Algeria',                kickoff: '2026-07-03T03:00:00Z', favorite: 'Switzerland'   },
+  { id: 'g13', home: 'Australia',       away: 'Egypt',                  kickoff: '2026-07-03T18:00:00Z', favorite: 'Egypt'         },
+  { id: 'g14', home: 'Argentina',       away: 'Cabo Verde',             kickoff: '2026-07-03T22:00:00Z', favorite: 'Argentina'     },
+  { id: 'g15', home: 'Colombia',        away: 'Ghana',                  kickoff: '2026-07-04T01:30:00Z', favorite: 'Colombia'      },
 ];
 
 const ADMIN_PASSWORD = 'zac2026';
@@ -196,15 +196,18 @@ function renderGames() {
           </select>`;
       }
 
+      const labelA = teamA === game.favorite ? `${teamA} <span class="fav-star" title="Favorite">★</span>` : teamA;
+      const labelB = teamB === game.favorite ? `${teamB} <span class="fav-star" title="Favorite">★</span>` : teamB;
+
       card.innerHTML = `
         <div class="game-meta">
           <span class="game-time">${timeStr} ET</span>
           ${isLocked && !winner ? '<span class="lock-icon">🔒</span>' : ''}
         </div>
         <div class="game-teams">
-          <span class="team-name">${teamA}</span>
+          <span class="team-name">${labelA}</span>
           <span class="vs">vs</span>
-          <span class="team-name">${teamB}</span>
+          <span class="team-name">${labelB}</span>
         </div>
         <div class="game-pick-row">${pickHTML}</div>`;
 
@@ -213,6 +216,12 @@ function renderGames() {
 
     container.appendChild(section);
   });
+
+  // Footnote
+  const note = document.createElement('p');
+  note.className = 'fav-note';
+  note.textContent = '★ = Favorite (correct pick = 1 pt) · Underdog correct = 2 pts';
+  container.appendChild(note);
 
   // Attach change listeners to dropdowns
   container.querySelectorAll('.pick-select').forEach(sel => {
@@ -253,14 +262,25 @@ async function loadLeaderboard() {
   resultsSnap.docs.forEach(doc => { resultsMap[doc.id] = doc.data().winner; });
   const totalDecided = Object.keys(resultsMap).length;
 
+  const gameMap = {};
+  GAMES.forEach(g => { gameMap[g.id] = g; });
+
+  const maxPoints = Object.entries(resultsMap).reduce((sum, [gameId, winner]) => {
+    const game = gameMap[gameId];
+    return sum + (game && winner !== game.favorite ? 2 : 1);
+  }, 0);
+
   const scores = users.map(user => {
-    const picks   = allPicksMap[user.id] || {};
-    let correct   = 0;
+    const picks = allPicksMap[user.id] || {};
+    let points  = 0;
     Object.entries(resultsMap).forEach(([gameId, winner]) => {
-      if (picks[gameId] === winner) correct++;
+      if (picks[gameId] === winner) {
+        const game = gameMap[gameId];
+        points += (game && winner !== game.favorite) ? 2 : 1;
+      }
     });
-    return { name: user.name, correct, totalDecided, pickCount: Object.keys(picks).length };
-  }).sort((a, b) => b.correct - a.correct || b.pickCount - a.pickCount);
+    return { name: user.name, points, maxPoints, pickCount: Object.keys(picks).length };
+  }).sort((a, b) => b.points - a.points || b.pickCount - a.pickCount);
 
   container.innerHTML = '';
 
@@ -281,9 +301,14 @@ async function loadLeaderboard() {
     row.innerHTML = `
       <span class="lb-rank">${medal}</span>
       <span class="lb-name">${s.name}</span>
-      <span class="lb-score">${s.correct} / ${s.totalDecided}</span>`;
+      <span class="lb-score">${s.points} pts</span>`;
     container.appendChild(row);
   });
+
+  const lbNote = document.createElement('p');
+  lbNote.className = 'fav-note';
+  lbNote.textContent = '★ Favorite correct = 1 pt · Underdog correct = 2 pts';
+  container.appendChild(lbNote);
 }
 
 // ─── TAB SWITCHING ────────────────────────────────────────────────────────────

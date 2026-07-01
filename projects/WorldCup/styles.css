@@ -330,6 +330,18 @@ main { padding-bottom: 4rem; }
   line-height: 1.6;
 }
 
+.fav-star {
+  color: #f5c518;
+  font-size: 0.85em;
+}
+
+.fav-note {
+  text-align: center;
+  color: #8b949e;
+  font-size: 0.75rem;
+  padding: 1rem 1rem 0.5rem;
+}
+
 /* ─── FOOTER / ADMIN TRIGGER ───────────────────────────────────────────────── */
 .app-footer {
   position: fixed;
@@ -339,14 +351,16 @@ main { padding-bottom: 4rem; }
 }
 
 .admin-trigger {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0.4rem 0.75rem;
   cursor: pointer;
-  opacity: 0.3;
-  transition: opacity 0.2s;
+  opacity: 1;
+  transition: background 0.15s;
 }
-.admin-trigger:hover { opacity: 0.8; }
+.admin-trigger:hover { background: #30363d; }
 
 /* ─── ADMIN PANEL ──────────────────────────────────────────────────────────── */
 .overlay {
